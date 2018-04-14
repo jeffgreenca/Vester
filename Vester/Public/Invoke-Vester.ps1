@@ -134,9 +134,9 @@
 
         ForEach ($ConfigFile in $Config) {
             # Gracefully handle Get-Item/Get-ChildItem
-            If ($ConfigFile.FullName) {
-                $ConfigFile = $ConfigFile.FullName
-            }
+            # Always pass thru Get-Item, to support cross-platform path conventions
+            $ConfigFile = (Get-Item $ConfigFile).FullName
+
             Write-Verbose -Message "Processing Config file $ConfigFile"
 
             # Load the defined $cfg values to test
@@ -164,7 +164,7 @@
             #Build Pester Parameter Hashtable to splat
             $Pester_Params = @{
                 Script = @{
-                    Path = "$(Split-Path -Parent $PSScriptRoot)\Private\Template\VesterTemplate.Tests.ps1"
+                    Path = (Get-Item "$(Split-Path -Parent $PSScriptRoot)\Private\Template\VesterTemplate.Tests.ps1").FullName
                     Parameters = @{
                         Cfg       = $cfg
                         TestFiles = $Test
