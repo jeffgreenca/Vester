@@ -135,11 +135,10 @@
         ForEach ($ConfigFile in $Config) {
             # Gracefully handle Get-Item/Get-ChildItem
             # Always pass thru Get-Item, to support cross-platform path conventions
-            try {
-              $ConfigFile = (Get-Item $ConfigFile).FullName
-            }
-            catch {
-                throw "Config file not found at path '$ConfigFile'. Exiting"
+            If(Test-Path $ConfigFile) {
+                $ConfigFile = (Get-Item $ConfigFile).FullName
+            } else {
+                throw "Config file specified does not exist: '$ConfigFile'. Exiting"
             }
 
             Write-Verbose -Message "Processing Config file $ConfigFile"
